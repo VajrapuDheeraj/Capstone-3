@@ -1,0 +1,14 @@
+﻿# Use official Nginx lightweight image
+FROM nginx:alpine
+
+# Set working directory inside Nginx default web root
+WORKDIR /usr/share/nginx/html
+
+# Remove default nginx static files
+RUN rm -rf ./*
+
+# Copy your single index.html into the container
+COPY index.html ./
+
+# Expose port 80 to serve the app
+EXPOSE 80
