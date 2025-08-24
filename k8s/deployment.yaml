@@ -1,1 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weatherdashboard-deployment
+  labels:
+    app: weatherdashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: weatherdashboard
+  template:
+    metadata:
+      labels:
+        app: weatherdashboard
+    spec:
+      containers:
+      - name: weatherdashboard
+        image: dheerajvajrapu/weatherdashboard:latest
+        ports:
+        - containerPort: 80
 
