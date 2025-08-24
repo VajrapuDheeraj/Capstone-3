@@ -1,1 +1,49 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  imageName: 'dheerajvajrapu/weatherdashboard'
+
+stages:
+- stage: Build_Test
+  jobs:
+  - job: Build
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+    
+    - script: pip install pytest
+      displayName: 'Install pytest'
+    
+    - script: pytest tests/
+      displayName: 'Run Unit Tests'
+    
+    - task: Docker@2
+      displayName: 'Build and Push Docker Image'
+      inputs:
+        containerRegistry: 'dockerhub-connection'
+        repository: '$(imageName)'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
+        tags: |
+          latest
+
+- stage: Deploy
+  jobs:
+  - job: DeployToMinikube
+    steps:
+    - task: Kubernetes@1
+      displayName: 'Deploy to Minikube'
+      inputs:
+        connectionType: 'None'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: |
+          k8s/deployment.yaml
+          k8s/service.yaml
+          k8s/ingress.yaml
 
